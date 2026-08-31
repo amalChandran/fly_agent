@@ -74,6 +74,23 @@ def test_trust_score_clamps_at_zero():
     assert it.trust == 0
 
 
+def test_dedup_keys_on_korean_not_translation():
+    # The offline translator truncates at 60 chars, so two different
+    # reviews sharing a 60+ char prefix collide after translation but
+    # not before it. Hashing the translation would wrongly merge them.
+    prefix = ("강남에서 눈재수술 상담 받고 고민 많이 하다가 결국 여기로 "
+              "결정했어요 원장님이 친절하시고 시설도 깨끗해서 좋았어요 정말 ")
+    assert len(prefix) > 60  # must exceed the mock translator's cut
+    items = pipeline.step_ingest([
+        row(prefix + "만족합니다 흉터도 거의 없네요", source="s1"),
+        row(prefix + "후회합니다 붓기가 너무 오래 가요", source="s2"),
+    ])
+    pipeline.step_translate(items)
+    pipeline.step_dedup(items)
+    assert items[0].duplicate_of is None
+    assert items[1].duplicate_of is None
+
+
 def test_schema_failure_routes_to_human_queue(monkeypatch):
     monkeypatch.setattr(llm, "call_json", lambda *a, **k: {"garbage": True})
     items = pipeline.step_ingest([row("아이디병원 후기")])

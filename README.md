@@ -54,6 +54,26 @@ dispatch, so the machinery runs cold for anyone cloning this.
   low-volume entity adjudication.
 - Mock seam in llm.py so the whole thing runs cold without a key.
 
+## Testing the tests
+
+A test that cannot fail is noise. Before submitting, six deliberate
+breaks went into the code one at a time; each one must turn the suite
+red or the covering test gets fixed.
+
+| mutation | result |
+|---|---|
+| remove trust-score clamp | caught |
+| loosen human-queue threshold 0.80 to 0.30 | caught |
+| kill the alias fast path | caught |
+| dedup on translation instead of Korean source | caught |
+| weaken red-flag penalty | caught |
+| unknown tool crashes the loop | caught |
+
+The dedup mutation was first caught only by an incidental crash, not by
+an assertion. That is luck, not coverage, so
+test_dedup_keys_on_korean_not_translation now exists: two different
+reviews engineered to collide after translation but not before it.
+
 ## Cut for time, next in line
 
 1. Near-dup detection beyond exact-normalized hash (simhash over
