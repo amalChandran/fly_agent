@@ -14,6 +14,7 @@ import hashlib
 import json
 import os
 import sys
+import time
 
 import llm
 import pipeline
@@ -21,7 +22,7 @@ import pipeline
 BRAIN = "claude-sonnet-4-6"
 MAX_TURNS = 40
 
-STATE = {"reviews": {}, "seen": {}, "emitted": [], "calls": 0}
+STATE = {"reviews": {}, "seen": {}, "emitted": [], "calls": 0, "log": []}
 
 TOOLS = [
     {"name": "fetch_reviews",
@@ -130,13 +131,22 @@ TOOL_IMPL = {
 
 
 def execute(name, args):
+    """Every tool call goes through here: logged, timed, and never
+    allowed to crash the loop. Failures go back to the model as data."""
     STATE["calls"] += 1
-    try:
-        out = TOOL_IMPL[name](args)
-    except Exception as e:
-        out = {"error": f"{type(e).__name__}: {e}"}
+    STATE["log"].append((name, args.get("review_id")))
+    t0 = time.perf_counter()
+    fn = TOOL_IMPL.get(name)
+    if fn is None:
+        out = {"error": f"unknown tool: {name}"}
+    else:
+        try:
+            out = fn(args)
+        except Exception as e:
+            out = {"error": f"{type(e).__name__}: {e}"}
+    ms = (time.perf_counter() - t0) * 1000
     print(f"  [{STATE['calls']:02d}] {name}({json.dumps(args, ensure_ascii=False)}) "
-          f"-> {json.dumps(out, ensure_ascii=False)[:140]}")
+          f"-> {json.dumps(out, ensure_ascii=False)[:140]} ({ms:.0f}ms)")
     return out
 
 
@@ -156,7 +166,8 @@ def run_live():
             if block.type == "tool_use":
                 out = execute(block.name, dict(block.input))
                 results.append({"type": "tool_result", "tool_use_id": block.id,
-                                "content": json.dumps(out, ensure_ascii=False)})
+                                "content": json.dumps(out, ensure_ascii=False),
+                                "is_error": "error" in out})
         messages.append({"role": "user", "content": results})
     raise RuntimeError(f"agent exceeded {MAX_TURNS} turns, aborting")
 

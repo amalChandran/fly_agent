@@ -10,7 +10,7 @@ for an English-language review platform.
 pip install pydantic anthropic pytest
 python agent.py           # the agent: tool-use loop, offline without a key
 python pipeline.py        # the same steps as a plain batch pipeline
-pytest -q                 # 5 tests, offline
+pytest -q                 # 14 tests, offline
 ANTHROPIC_API_KEY=... python agent.py      # real Claude tool-use loop
 ```
 

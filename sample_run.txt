@@ -1,26 +1,26 @@
 # scripted planner (no ANTHROPIC_API_KEY), same tools and dispatch
-  [01] fetch_reviews({}) -> {"review_ids": [0, 1, 2, 3], "dropped_blank": 1}
-  [02] translate_review({"review_id": 0}) -> {"translated_en": "[EN mock] 아이디병원에서 코 수술 받았어요. 350만원이었고 결과 만족합니다. 붓기는 2주 갔어요."}
-  [03] extract_fields({"review_id": 0}) -> {"procedure": "rhinoplasty", "clinic_raw": "아이디병원", "price_krw": 3500000, "sentiment": "positive", "red_flags": [], "confidence": 0.9}
-  [04] match_clinic({"review_id": 0}) -> {"canonical": "ID Hospital", "confidence": 1.0, "via": "alias_table", "needs_human_review": false}
-  [05] check_duplicate({"review_id": 0}) -> {"duplicate_of": null}
-  [06] finalize_review({"review_id": 0}) -> {"trust_score": 85, "trust_reasons": ["+20 high extraction confidence", "+15 clinic matched in verified registry"], "queued_for_human": fals
-  [07] translate_review({"review_id": 1}) -> {"translated_en": "[EN mock] 아이디병원에서 코 수술 받았어요. 350만원이었고 결과 만족합니다. 붓기는 2주 갔어요."}
-  [08] extract_fields({"review_id": 1}) -> {"procedure": "rhinoplasty", "clinic_raw": "아이디병원", "price_krw": 3500000, "sentiment": "positive", "red_flags": [], "confidence": 0.9}
-  [09] match_clinic({"review_id": 1}) -> {"canonical": "ID Hospital", "confidence": 1.0, "via": "alias_table", "needs_human_review": false}
-  [10] check_duplicate({"review_id": 1}) -> {"duplicate_of": "naver_cafe/user_a/2026-07-02"}
-  [11] finalize_review({"review_id": 1}) -> {"trust_score": 55, "trust_reasons": ["+20 high extraction confidence", "+15 clinic matched in verified registry", "-30 duplicate of earlier
-  [12] translate_review({"review_id": 2}) -> {"translated_en": "[EN mock] Wonjin 쌍꺼풀 후기! 원장님 친절하시고 자연스러워요."}
-  [13] extract_fields({"review_id": 2}) -> {"procedure": "double eyelid", "clinic_raw": "Wonjin Plastic Surgery", "price_krw": null, "sentiment": "positive", "red_flags": [], "confide
-  [14] match_clinic({"review_id": 2}) -> {"canonical": "Wonjin Plastic Surgery Clinic", "confidence": 0.62, "via": "llm_adjudication", "needs_human_review": true}
-  [15] check_duplicate({"review_id": 2}) -> {"duplicate_of": null}
-  [16] finalize_review({"review_id": 2}) -> {"trust_score": 70, "trust_reasons": ["+20 high extraction confidence"], "queued_for_human": true}
-  [17] translate_review({"review_id": 3}) -> {"translated_en": "[EN mock] 협찬 받아 작성한 후기입니다. 김피부과 레이저토닝 최고예요! 완전 추천!"}
-  [18] extract_fields({"review_id": 3}) -> {"procedure": "laser toning", "clinic_raw": "김피부과", "price_krw": null, "sentiment": "negative", "red_flags": ["sponsored_language"], "confid
-  [19] match_clinic({"review_id": 3}) -> {"canonical": "Kim Dermatology", "confidence": 1.0, "via": "alias_table", "needs_human_review": false}
-  [20] check_duplicate({"review_id": 3}) -> {"duplicate_of": null}
-  [21] finalize_review({"review_id": 3}) -> {"trust_score": 40, "trust_reasons": ["+15 clinic matched in verified registry", "-25 red flags: sponsored_language"], "queued_for_human": f
-  [22] report({}) -> {"records": 4, "queued_for_human": 1, "duplicates": 1}
+  [01] fetch_reviews({}) -> {"review_ids": [0, 1, 2, 3], "dropped_blank": 1} (0ms)
+  [02] translate_review({"review_id": 0}) -> {"translated_en": "[EN mock] 아이디병원에서 코 수술 받았어요. 350만원이었고 결과 만족합니다. 붓기는 2주 갔어요."} (0ms)
+  [03] extract_fields({"review_id": 0}) -> {"procedure": "rhinoplasty", "clinic_raw": "아이디병원", "price_krw": 3500000, "sentiment": "positive", "red_flags": [], "confidence": 0.9} (0ms)
+  [04] match_clinic({"review_id": 0}) -> {"canonical": "ID Hospital", "confidence": 1.0, "via": "alias_table", "needs_human_review": false} (0ms)
+  [05] check_duplicate({"review_id": 0}) -> {"duplicate_of": null} (0ms)
+  [06] finalize_review({"review_id": 0}) -> {"trust_score": 85, "trust_reasons": ["+20 high extraction confidence", "+15 clinic matched in verified registry"], "queued_for_human": fals (0ms)
+  [07] translate_review({"review_id": 1}) -> {"translated_en": "[EN mock] 아이디병원에서 코 수술 받았어요. 350만원이었고 결과 만족합니다. 붓기는 2주 갔어요."} (0ms)
+  [08] extract_fields({"review_id": 1}) -> {"procedure": "rhinoplasty", "clinic_raw": "아이디병원", "price_krw": 3500000, "sentiment": "positive", "red_flags": [], "confidence": 0.9} (0ms)
+  [09] match_clinic({"review_id": 1}) -> {"canonical": "ID Hospital", "confidence": 1.0, "via": "alias_table", "needs_human_review": false} (0ms)
+  [10] check_duplicate({"review_id": 1}) -> {"duplicate_of": "naver_cafe/user_a/2026-07-02"} (0ms)
+  [11] finalize_review({"review_id": 1}) -> {"trust_score": 55, "trust_reasons": ["+20 high extraction confidence", "+15 clinic matched in verified registry", "-30 duplicate of earlier (0ms)
+  [12] translate_review({"review_id": 2}) -> {"translated_en": "[EN mock] Wonjin 쌍꺼풀 후기! 원장님 친절하시고 자연스러워요."} (0ms)
+  [13] extract_fields({"review_id": 2}) -> {"procedure": "double eyelid", "clinic_raw": "Wonjin Plastic Surgery", "price_krw": null, "sentiment": "positive", "red_flags": [], "confide (0ms)
+  [14] match_clinic({"review_id": 2}) -> {"canonical": "Wonjin Plastic Surgery Clinic", "confidence": 0.62, "via": "llm_adjudication", "needs_human_review": true} (0ms)
+  [15] check_duplicate({"review_id": 2}) -> {"duplicate_of": null} (0ms)
+  [16] finalize_review({"review_id": 2}) -> {"trust_score": 70, "trust_reasons": ["+20 high extraction confidence"], "queued_for_human": true} (0ms)
+  [17] translate_review({"review_id": 3}) -> {"translated_en": "[EN mock] 협찬 받아 작성한 후기입니다. 김피부과 레이저토닝 최고예요! 완전 추천!"} (0ms)
+  [18] extract_fields({"review_id": 3}) -> {"procedure": "laser toning", "clinic_raw": "김피부과", "price_krw": null, "sentiment": "negative", "red_flags": ["sponsored_language"], "confid (0ms)
+  [19] match_clinic({"review_id": 3}) -> {"canonical": "Kim Dermatology", "confidence": 1.0, "via": "alias_table", "needs_human_review": false} (0ms)
+  [20] check_duplicate({"review_id": 3}) -> {"duplicate_of": null} (0ms)
+  [21] finalize_review({"review_id": 3}) -> {"trust_score": 40, "trust_reasons": ["+15 clinic matched in verified registry", "-25 red flags: sponsored_language"], "queued_for_human": f (0ms)
+  [22] report({}) -> {"records": 4, "queued_for_human": 1, "duplicates": 1} (0ms)
 
 # agent summary: Processed 4 reviews: 1 queued for human review, 1 flagged duplicate.
 # total tool calls: 22
