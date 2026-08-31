@@ -1,20 +1,39 @@
-# Korean clinic-review ingestion pipeline
+# Korean clinic-review ingestion agent
 
-Built in a 40-minute timed exercise. Takes messy Korean clinic reviews
-and emits translated, normalized, deduplicated, trust-scored records
-for an English-language review platform.
+> The model plans. Tools act. State never rides the context window.
+
+Messy Korean clinic reviews in; translated, clinic-normalized,
+deduplicated, trust-scored records out. A Claude tool-use loop drives
+seven deterministic, tested tools. Built in a 40-minute timed exercise.
+
+```
+fixtures.jsonl ─▶ fetch ─▶ translate ─▶ extract ─▶ match_clinic ─▶ dedup ─▶ trust ─▶ records
+                           LLM, cheap   LLM, cheap  alias ▸ LLM judge  md5(ko)  plain rules
+                                        anything under 0.80 confidence ─▶ human review queue
+```
 
 ## Run it
 
 ```
 pip install pydantic anthropic pytest
-python agent.py           # the agent: tool-use loop, offline without a key
-python pipeline.py        # the same steps as a plain batch pipeline
-pytest -q                 # 14 tests, offline
-ANTHROPIC_API_KEY=... python agent.py      # real Claude tool-use loop
+make run       # the agent; offline planner without a key, Claude loop with one
+make test      # 15 tests, offline
+make mutants   # break the code six ways, the suite must go red each time
 ```
 
-sample_run.txt is one committed run: 22 tool calls, 4 records, 1
+## What a run looks like
+
+```
+  [04] match_clinic({"review_id": 0}) -> {"canonical": "ID Hospital", "confidence": 1.0, "via": "alias_table", ...} (0ms)
+  [10] check_duplicate({"review_id": 1}) -> {"duplicate_of": "naver_cafe/user_a/2026-07-02"} (0ms)
+  [14] match_clinic({"review_id": 2}) -> {"canonical": "Wonjin Plastic Surgery Clinic", "confidence": 0.62, "via": "llm_adjudication", "needs_human_review": true} (0ms)
+  [21] finalize_review({"review_id": 3}) -> {"trust_score": 40, "trust_reasons": [..., "-25 red flags: sponsored_language"], ...} (0ms)
+  [22] report({}) -> {"records": 4, "queued_for_human": 1, "duplicates": 1}
+
+# agent summary: Processed 4 reviews: 1 queued for human review, 1 flagged duplicate.
+```
+
+sample_run.txt is the full committed run: 22 tool calls, 4 records, 1
 duplicate flagged, 1 queued for human review.
 
 ## The agent
