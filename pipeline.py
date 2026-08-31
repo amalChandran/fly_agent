@@ -167,27 +167,26 @@ def step_trust_score(items: list[Item]) -> list[Item]:
     return items
 
 
+def to_record(it: Item) -> Record:
+    return Record(
+        source=it.raw.source, author=it.raw.author, posted=it.raw.posted,
+        text_ko=it.raw.text_ko,
+        translated_en=it.translation.translated_en if it.translation else "",
+        procedure=it.extraction.procedure, clinic=it.clinic.canonical,
+        price_krw=it.extraction.price_krw, sentiment=it.extraction.sentiment,
+        red_flags=it.extraction.red_flags, trust_score=it.trust,
+        trust_reasons=it.trust_reasons,
+        needs_human_review=it.needs_human_review,
+        duplicate_of=it.duplicate_of,
+    )
+
+
 def run(rows: list[dict]) -> list[Record]:
     items = step_ingest(rows)
     for step in (step_translate, step_extract, step_normalize_clinic,
                  step_dedup, step_trust_score):
         items = step(items)
-    records = []
-    for it in items:
-        if it.dropped:
-            continue
-        records.append(Record(
-            source=it.raw.source, author=it.raw.author, posted=it.raw.posted,
-            text_ko=it.raw.text_ko,
-            translated_en=it.translation.translated_en if it.translation else "",
-            procedure=it.extraction.procedure, clinic=it.clinic.canonical,
-            price_krw=it.extraction.price_krw, sentiment=it.extraction.sentiment,
-            red_flags=it.extraction.red_flags, trust_score=it.trust,
-            trust_reasons=it.trust_reasons,
-            needs_human_review=it.needs_human_review,
-            duplicate_of=it.duplicate_of,
-        ))
-    return records
+    return [to_record(it) for it in items if not it.dropped]
 
 
 if __name__ == "__main__":

@@ -8,13 +8,23 @@ for an English-language review platform.
 
 ```
 pip install pydantic anthropic pytest
-python pipeline.py        # runs offline on fixtures.jsonl, no key needed
-pytest -q                 # 4 tests, offline
-ANTHROPIC_API_KEY=... python pipeline.py   # same pipeline, real models
+python agent.py           # the agent: tool-use loop, offline without a key
+python pipeline.py        # the same steps as a plain batch pipeline
+pytest -q                 # 5 tests, offline
+ANTHROPIC_API_KEY=... python agent.py      # real Claude tool-use loop
 ```
 
-Output: one JSON record per surviving review on stdout, run summary on
-stderr.
+sample_run.txt is one committed run: 22 tool calls, 4 records, 1
+duplicate flagged, 1 queued for human review.
+
+## The agent
+
+agent.py is a Claude tool-use loop. The model plans; seven tools act,
+and each tool is one of the deterministic, tested functions below.
+Full review state lives server-side keyed by review_id, so the model
+only ever sees compact JSON tool results, not full payloads. Without an
+API key, a scripted planner issues the identical calls through the same
+dispatch, so the machinery runs cold for anyone cloning this.
 
 ## The steps
 
